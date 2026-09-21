@@ -12,12 +12,12 @@ function Snake:new()
     local instance = setmetatable({}, Snake)
 
     instance.segments = {}
-
     instance.direction = "RIGHT"
-
-    instance.speed = 5
-
+    instance.nextDirection = "RIGHT"
+    instance.speed = 8
     instance.moveTimer = 0
+    instance.cellSize = 20
+    instance.pendingGrow = 0
 
     return instance
 
@@ -33,7 +33,6 @@ function Snake:update(dt)
     if self.moveTimer >= moveInterval then
 
         self:move()
-
         self.moveTimer = 0
 
     end
@@ -43,34 +42,79 @@ end
 
 function Snake:move()
 
-    -- PLACEHOLDER:
-    -- Mover la cabeza según la dirección y actualizar los segmentos del cuerpo
+    self.direction = self.nextDirection
+
+    local head = self.segments[1]
+    local x, y = head.x, head.y
+    local s = self.cellSize
+
+    if self.direction == "UP" then
+        y = y - s
+    elseif self.direction == "DOWN" then
+        y = y + s
+    elseif self.direction == "LEFT" then
+        x = x - s
+    elseif self.direction == "RIGHT" then
+        x = x + s
+    end
+
+    table.insert(self.segments, 1, SnakeSegment:new(x, y))
+
+    if self.pendingGrow > 0 then
+        self.pendingGrow = self.pendingGrow - 1
+    else
+        table.remove(self.segments)
+    end
 
 end
 
 
 function Snake:changeDirection(direction)
 
-    -- PLACEHOLDER:
-    -- Validar que no se cambie directamente a la dirección opuesta
+    local opposite = {
+        UP = "DOWN",
+        DOWN = "UP",
+        LEFT = "RIGHT",
+        RIGHT = "LEFT"
+    }
 
-    self.direction = direction
+    if direction ~= opposite[self.direction] then
+        self.nextDirection = direction
+    end
 
 end
 
 
 function Snake:grow()
 
-    -- PLACEHOLDER:
-    -- Agregar un nuevo SnakeSegment
+    self.pendingGrow = self.pendingGrow + 1
 
 end
 
 
 function Snake:checkSelfCollision()
 
-    -- PLACEHOLDER:
-    -- Verificar si la cabeza colisiona con algún segmento del cuerpo
+    local head = self.segments[1]
+
+    for i = 2, #self.segments do
+        local s = self.segments[i]
+        if s.x == head.x and s.y == head.y then
+            return true
+        end
+    end
+
+    return false
+
+end
+
+
+function Snake:occupies(x, y)
+
+    for _, s in ipairs(self.segments) do
+        if s.x == x and s.y == y then
+            return true
+        end
+    end
 
     return false
 
@@ -86,16 +130,34 @@ end
 
 function Snake:draw()
 
-    -- PLACEHOLDER:
-    -- Dibujar todos los segmentos de la serpiente
+    for i, s in ipairs(self.segments) do
+        if i == 1 then
+            love.graphics.setColor(0.2, 0.8, 0.3)
+        else
+            love.graphics.setColor(0.15, 0.6, 0.25)
+        end
+        love.graphics.rectangle("fill", s.x, s.y, self.cellSize - 1, self.cellSize - 1)
+    end
+
+    love.graphics.setColor(1, 1, 1)
 
 end
 
 
 function Snake:reset()
 
-    -- PLACEHOLDER:
-    -- Restablecer posición y tamaño inicial
+    self.segments = {}
+    self.direction = "RIGHT"
+    self.nextDirection = "RIGHT"
+    self.moveTimer = 0
+    self.pendingGrow = 0
+
+    local startX = 10 * self.cellSize
+    local startY = 10 * self.cellSize
+
+    for i = 0, 2 do
+        table.insert(self.segments, SnakeSegment:new(startX - i * self.cellSize, startY))
+    end
 
 end
 

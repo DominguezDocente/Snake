@@ -10,6 +10,7 @@ function Food:new()
 
     instance.x = 400
     instance.y = 300
+    instance.radius = 8
 
     return instance
 
@@ -33,15 +34,15 @@ end
 
 function Food:draw()
 
-    -- PLACEHOLDER:
-    -- Dibujar la comida
-
+    local cs = 20
+    love.graphics.setColor(0.9, 0.25, 0.25)
     love.graphics.circle(
         "fill",
-        self.x,
-        self.y,
-        10
+        self.x + cs / 2,
+        self.y + cs / 2,
+        self.radius
     )
+    love.graphics.setColor(1, 1, 1)
 
 end
 

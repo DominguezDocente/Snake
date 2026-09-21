@@ -29,24 +29,26 @@ end
 
 function Board:getRandomPosition()
 
-    -- PLACEHOLDER:
-    -- Generar una posición aleatoria dentro de los límites del tablero
+    local cols = math.floor(self.width / self.cellSize)
+    local rows = math.floor(self.height / self.cellSize)
+
+    local col = love.math.random(0, cols - 1)
+    local row = love.math.random(0, rows - 1)
+
+    return col * self.cellSize, row * self.cellSize
 
 end
 
 
 function Board:draw()
 
-    -- PLACEHOLDER:
-    -- Dibujar el área de juego
+    love.graphics.setColor(0.1, 0.1, 0.12)
+    love.graphics.rectangle("fill", 0, 0, self.width, self.height)
 
-    love.graphics.rectangle(
-        "line",
-        0,
-        0,
-        self.width,
-        self.height
-    )
+    love.graphics.setColor(0.35, 0.35, 0.4)
+    love.graphics.rectangle("line", 0, 0, self.width, self.height)
+
+    love.graphics.setColor(1, 1, 1)
 
 end
 
